@@ -8,6 +8,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM "3.5" CACHE STRING "")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -18,5 +19,11 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
-add_executable(ElementalBrawler main.cpp Entity.cpp GameManager.cpp)
+add_executable(ElementalBrawler 
+    src/main.cpp 
+    src/entities/Entity.cpp 
+    src/core/GameManager.cpp 
+    src/entities/FighterBall.cpp
+)
+target_include_directories(ElementalBrawler PRIVATE src)
 target_link_libraries(ElementalBrawler PRIVATE raylib)
