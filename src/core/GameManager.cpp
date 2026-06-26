@@ -75,13 +75,24 @@ void GameManager::update(float deltaTime) {
                 float speed = Vector2DotProduct(relativeVelocity, normal);
 
                 if (speed < 0) {
-                    // They are moving towards each other
+                    // They are moving towards each other, meaning a collision just occurred!
                     const float restitution = 1.0f; // 1.0 means perfectly elastic (no speed loss)
                     float impulse = -(1.0f + restitution) * speed / 2.0f; // Assuming equal mass
 
                     Vector2 impulseVec = Vector2Scale(normal, impulse);
                     a->velocity = Vector2Add(a->velocity, impulseVec);
                     b->velocity = Vector2Subtract(b->velocity, impulseVec);
+
+                    // --- COMBAT LOGIC: Deal damage on collision ---
+                    // If they are FighterBalls, cast them and apply damage
+                    auto fighterA = std::dynamic_pointer_cast<FighterBall>(a);
+                    auto fighterB = std::dynamic_pointer_cast<FighterBall>(b);
+
+                    if (fighterA && fighterB) {
+                        // Apply a flat 15 damage per collision for now
+                        fighterA->applyDamage(15.0f);
+                        fighterB->applyDamage(15.0f);
+                    }
                 }
             }
         }
