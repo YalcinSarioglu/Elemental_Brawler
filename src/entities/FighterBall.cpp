@@ -48,14 +48,14 @@ void FighterBall::draw() const {
   int barHeight = 6;
   int barX = position.x - barWidth / 2;
   int barY = position.y - radius - 15;
-  
+
   // Background (red)
   DrawRectangle(barX, barY, barWidth, barHeight, RED);
-  
+
   // Foreground (green) based on health percentage (assuming max health is 100)
   float healthPercent = std::max(0.0f, health) / 100.0f;
   DrawRectangle(barX, barY, barWidth * healthPercent, barHeight, GREEN);
-  
+
   // Outline
   DrawRectangleLines(barX, barY, barWidth, barHeight, BLACK);
 }
