@@ -27,10 +27,13 @@ void GameManager::spawnFighters()
   state = GameState::Playing;
   resultText.clear();
 
+  // All fighters share one size, so only weapons and effects decide the fight
+  const float fighterRadius = 22.0f;
+
   auto fireBall =
-      std::make_shared<FighterBall>(Vector2{200, 300}, 20.0f, RED, Element::FIRE);
+      std::make_shared<FighterBall>(Vector2{200, 300}, fighterRadius, RED, Element::FIRE);
   auto iceBall =
-      std::make_shared<FighterBall>(Vector2{600, 300}, 25.0f, BLUE, Element::ICE);
+      std::make_shared<FighterBall>(Vector2{600, 300}, fighterRadius, BLUE, Element::ICE);
 
   // Each element brings its own weapon
   fireBall->weapon = std::make_unique<FireStaff>(); // ranged
@@ -164,7 +167,7 @@ void GameManager::resolveFighterCollisions()
         {
           // They are moving towards each other, meaning a collision just
           // occurred!
-          const float restitution = 1.0f; // 1.0 means perfectly elastic (no speed loss)
+          const float restitution = 1.0f;                       // 1.0 means perfectly elastic (no speed loss)
           float impulse = -(1.0f + restitution) * speed / 2.0f; // Assuming equal mass
 
           Vector2 impulseVec = Vector2Scale(normal, impulse);
@@ -199,7 +202,7 @@ void GameManager::resolveProjectileHits()
       if (CheckCollisionCircles(projectile.position, projectile.radius, fighter->position,
                                 fighter->radius))
       {
-        fighter->applyDamage(projectile.getDamage());
+        fighter->applyHit(projectile.getHit());
         projectile.kill(); // one hit per projectile
         break;
       }
@@ -212,8 +215,10 @@ void GameManager::removeDeadEntities()
   // C++20 std::erase_if: removes every element matching the predicate in one
   // pass. Safe because nothing else is iterating over these vectors right now.
   std::erase_if(fighters,
-                [](const std::shared_ptr<FighterBall> &f) { return !f->isAlive(); });
-  std::erase_if(projectiles, [](const Projectile &p) { return !p.isAlive(); });
+                [](const std::shared_ptr<FighterBall> &f)
+                { return !f->isAlive(); });
+  std::erase_if(projectiles, [](const Projectile &p)
+                { return !p.isAlive(); });
 }
 
 void GameManager::checkGameOver()

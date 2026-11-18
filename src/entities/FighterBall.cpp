@@ -1,5 +1,6 @@
 #include "entities/FighterBall.h"
 #include <algorithm>
+#include <cmath>
 
 FighterBall::FighterBall(Vector2 pos, float rad, Color col, Element element)
     : Entity(pos, rad, col), health(100.0f), baseSpeed(200.0f),
@@ -7,9 +8,13 @@ FighterBall::FighterBall(Vector2 pos, float rad, Color col, Element element)
 
 void FighterBall::update(float deltaTime)
 {
-  // Update position
-  position.x += velocity.x * deltaTime;
-  position.y += velocity.y * deltaTime;
+  tickEffects(deltaTime);
+
+  // Update position. The velocity itself never changes when chilled: only how
+  // far we move this frame. So there's nothing to "restore" when chill ends.
+  const float moveScale = slowFactor() * deltaTime;
+  position.x += velocity.x * moveScale;
+  position.y += velocity.y * moveScale;
 
   // Bouncing logic (hardcoded bounds 800x600 for now)
   const float screenWidth = 800.0f;
@@ -47,6 +52,21 @@ void FighterBall::draw() const
 {
   DrawCircleV(position, radius, color);
 
+  // Chilled: frosty overlay on the body
+  if (isChilled())
+  {
+    DrawCircleV(position, radius, Fade(SKYBLUE, 0.55f));
+    DrawCircleLinesV(position, radius + 2.0f, RAYWHITE);
+  }
+
+  // Burning: flickering orange rings around the body
+  if (isBurning())
+  {
+    const float flicker = 0.5f + 0.4f * sinf(effects.burnTimer * 30.0f);
+    DrawCircleLinesV(position, radius + 3.0f, Fade(ORANGE, flicker));
+    DrawCircleLinesV(position, radius + 5.0f, Fade(RED, flicker * 0.7f));
+  }
+
   if (weapon)
   {
     weapon->draw(*this);
@@ -78,7 +98,9 @@ void FighterBall::updateWeapon(float deltaTime, WeaponContext &ctx)
 {
   if (weapon)
   {
-    weapon->update(*this, deltaTime, ctx);
+    // Chilled weapons get less time per frame, so cooldowns run slower and
+    // the axe spins slower. No weapon needs to know about chill at all.
+    weapon->update(*this, deltaTime * slowFactor(), ctx);
   }
 }
 
@@ -87,4 +109,31 @@ void FighterBall::applyDamage(float amount)
   health -= amount;
   if (health < 0)
     health = 0;
+}
+
+void FighterBall::applyHit(const Hit &hit)
+{
+  applyDamage(hit.damage);
+
+  // Refresh, don't stack: a new hit resets the timer to the longer value.
+  // Stacking would let several quick hits pile up and melt the target.
+  effects.burnTimer = std::max(effects.burnTimer, hit.burnSeconds);
+  effects.chillTimer = std::max(effects.chillTimer, hit.chillSeconds);
+}
+
+void FighterBall::tickEffects(float deltaTime)
+{
+  if (isBurning())
+  {
+    // Only count the part of this frame the burn was actually active, so the
+    // total burn damage is exact (burnSeconds * dps) whatever the frame rate.
+    const float activeTime = std::min(deltaTime, effects.burnTimer);
+    applyDamage(burnDamagePerSecond * activeTime);
+    effects.burnTimer -= activeTime;
+  }
+
+  if (isChilled())
+  {
+    effects.chillTimer = std::max(0.0f, effects.chillTimer - deltaTime);
+  }
 }

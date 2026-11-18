@@ -1,8 +1,8 @@
 #include "entities/Projectile.h"
 
-Projectile::Projectile(Vector2 pos, Vector2 vel, float rad, Color col, float dmg, int owner,
+Projectile::Projectile(Vector2 pos, Vector2 vel, float rad, Color col, Hit onHit, int owner,
                        float life)
-    : Entity(pos, rad, col), damage(dmg), ownerId(owner), lifetime(life)
+    : Entity(pos, rad, col), hit(onHit), ownerId(owner), lifetime(life)
 {
   velocity = vel;
 }
@@ -28,6 +28,6 @@ void Projectile::update(float deltaTime)
 void Projectile::draw() const
 {
   DrawCircleV(position, radius * 1.8f, Fade(color, 0.3f)); // glow
-  DrawCircleV(position, radius, color);                     // body
-  DrawCircleV(position, radius * 0.5f, YELLOW);             // hot core
+  DrawCircleV(position, radius, color);                    // body
+  DrawCircleV(position, radius * 0.5f, YELLOW);            // hot core
 }

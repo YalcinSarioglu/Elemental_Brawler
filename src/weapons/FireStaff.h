@@ -13,7 +13,8 @@ private:
   static constexpr float cooldown = 1.0f;          // seconds between shots
   static constexpr float projectileSpeed = 450.0f; // pixels per second
   static constexpr float projectileRadius = 6.0f;
-  static constexpr float damage = 6.0f;
+  static constexpr float damage = 5.0f;
+  static constexpr float burnSeconds = 2.0f; // each hit sets the target on fire
   static constexpr float lifetime = 2.0f; // seconds before a fireball fizzles out
 
   float timer = cooldown;

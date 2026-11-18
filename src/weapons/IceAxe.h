@@ -11,11 +11,12 @@ public:
   void draw(const FighterBall &owner) const override;
 
 private:
-  static constexpr float spinSpeed = 5.0f;    // radians per second
+  static constexpr float spinSpeed = 5.0f;     // radians per second
   static constexpr float handleLength = 32.0f; // gap between body edge and axe head
   static constexpr float headRadius = 13.0f;
   static constexpr float damage = 22.0f;
-  static constexpr float hitCooldown = 0.4f; // seconds, so one swing = one hit
+  static constexpr float chillSeconds = 2.0f; // each hit slows the target
+  static constexpr float hitCooldown = 0.4f;  // seconds, so one swing = one hit
 
   float angle = 0.0f;
   float cooldownTimer = 0.0f;

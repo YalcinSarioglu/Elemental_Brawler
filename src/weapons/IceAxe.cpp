@@ -31,7 +31,7 @@ void IceAxe::update(FighterBall &owner, float deltaTime, WeaponContext &ctx)
 
     if (CheckCollisionCircles(head, headRadius, enemy->position, enemy->radius))
     {
-      enemy->applyDamage(damage);
+      enemy->applyHit(Hit{damage, 0.0f, chillSeconds});
 
       // Knockback: send the enemy flying away from the axe head, same speed.
       // Keeping the speed (not adding to it) stops balls from speeding up forever.

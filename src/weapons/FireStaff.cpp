@@ -5,29 +5,29 @@
 
 namespace
 {
-// Closest living fighter that is not the owner, or nullptr if none.
-const FighterBall *findNearestEnemy(const FighterBall &owner,
-                                    const std::vector<std::shared_ptr<FighterBall>> &fighters)
-{
-  const FighterBall *nearest = nullptr;
-  float bestDistSq = 0.0f;
-
-  for (const auto &f : fighters)
+  // Closest living fighter that is not the owner, or nullptr if none.
+  const FighterBall *findNearestEnemy(const FighterBall &owner,
+                                      const std::vector<std::shared_ptr<FighterBall>> &fighters)
   {
-    if (f->id == owner.id || !f->isAlive())
+    const FighterBall *nearest = nullptr;
+    float bestDistSq = 0.0f;
+
+    for (const auto &f : fighters)
     {
-      continue;
+      if (f->id == owner.id || !f->isAlive())
+      {
+        continue;
+      }
+      // Squared distance: same ordering as real distance, but no sqrt
+      const float distSq = Vector2DistanceSqr(owner.position, f->position);
+      if (nearest == nullptr || distSq < bestDistSq)
+      {
+        nearest = f.get();
+        bestDistSq = distSq;
+      }
     }
-    // Squared distance: same ordering as real distance, but no sqrt
-    const float distSq = Vector2DistanceSqr(owner.position, f->position);
-    if (nearest == nullptr || distSq < bestDistSq)
-    {
-      nearest = f.get();
-      bestDistSq = distSq;
-    }
+    return nearest;
   }
-  return nearest;
-}
 } // namespace
 
 void FireStaff::update(FighterBall &owner, float deltaTime, WeaponContext &ctx)
@@ -52,7 +52,8 @@ void FireStaff::update(FighterBall &owner, float deltaTime, WeaponContext &ctx)
       Vector2Add(owner.position, Vector2Scale(aimDir, owner.radius + projectileRadius + 2.0f));
   const Vector2 velocity = Vector2Scale(aimDir, projectileSpeed);
 
-  ctx.spawnQueue.emplace_back(spawnPos, velocity, projectileRadius, ORANGE, damage, owner.id,
+  const Hit hit{damage, burnSeconds, 0.0f};
+  ctx.spawnQueue.emplace_back(spawnPos, velocity, projectileRadius, ORANGE, hit, owner.id,
                               lifetime);
 }
 
