@@ -26,6 +26,7 @@ add_executable(ElementalBrawler
     src/entities/FighterBall.cpp
     src/entities/Projectile.cpp
     src/weapons/FireStaff.cpp
+    src/weapons/IceAxe.cpp
 )
 target_include_directories(ElementalBrawler PRIVATE src)
 target_link_libraries(ElementalBrawler PRIVATE raylib)

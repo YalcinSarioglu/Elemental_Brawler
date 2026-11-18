@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "weapons/FireStaff.h"
+#include "weapons/IceAxe.h"
 #include <cmath>
 #include <iterator>
 
@@ -31,8 +32,9 @@ void GameManager::spawnFighters()
   auto iceBall =
       std::make_shared<FighterBall>(Vector2{600, 300}, 25.0f, BLUE, Element::ICE);
 
-  // FIRE gets a ranged weapon. ICE has none yet (its axe comes in phase 2).
-  fireBall->weapon = std::make_unique<FireStaff>();
+  // Each element brings its own weapon
+  fireBall->weapon = std::make_unique<FireStaff>(); // ranged
+  iceBall->weapon = std::make_unique<IceAxe>();     // melee
 
   const float speed = 400.0f;
   const float angle1 = static_cast<float>(GetRandomValue(0, 360)) * DEG2RAD;

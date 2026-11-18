@@ -10,10 +10,10 @@ public:
   void draw(const FighterBall &owner) const override;
 
 private:
-  static constexpr float cooldown = 0.8f;          // seconds between shots
+  static constexpr float cooldown = 1.0f;          // seconds between shots
   static constexpr float projectileSpeed = 450.0f; // pixels per second
   static constexpr float projectileRadius = 6.0f;
-  static constexpr float damage = 8.0f;
+  static constexpr float damage = 6.0f;
   static constexpr float lifetime = 2.0f; // seconds before a fireball fizzles out
 
   float timer = cooldown;

@@ -10,7 +10,9 @@ class Projectile;
 // What a weapon is allowed to see and do during its update.
 struct WeaponContext
 {
-  const std::vector<std::shared_ptr<FighterBall>> &fighters; // read-only view
+  // The list itself is const (weapons can't add or remove fighters), but the
+  // fighters in it are not, so melee weapons can damage and push them.
+  const std::vector<std::shared_ptr<FighterBall>> &fighters;
   std::vector<Projectile> &spawnQueue; // new projectiles go here, not into the live list
 };
 
