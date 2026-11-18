@@ -27,3 +27,9 @@ add_executable(ElementalBrawler
 )
 target_include_directories(ElementalBrawler PRIVATE src)
 target_link_libraries(ElementalBrawler PRIVATE raylib)
+
+if(MSVC)
+  target_compile_options(ElementalBrawler PRIVATE /W4 /permissive- /w15038)
+else()
+  target_compile_options(ElementalBrawler PRIVATE -Wall -Wextra -Wpedantic -Wconversion)
+endif()

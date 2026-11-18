@@ -41,23 +41,25 @@ void FighterBall::update(float deltaTime) {
 void FighterBall::draw() const {
   DrawCircleV(position, radius, color);
   // Draw a small outline to make it pop
-  DrawCircleLines(position.x, position.y, radius, BLACK);
+  DrawCircleLinesV(position, radius, BLACK);
 
-  // Draw Health Bar
-  int barWidth = 40;
-  int barHeight = 6;
-  int barX = position.x - barWidth / 2;
-  int barY = position.y - radius - 15;
+  // Draw Health Bar (all float, so no implicit narrowing to int)
+  const float barWidth = 40.0f;
+  const float barHeight = 6.0f;
+  const Rectangle bar{position.x - barWidth / 2.0f, position.y - radius - 15.0f,
+                      barWidth, barHeight};
 
   // Background (red)
-  DrawRectangle(barX, barY, barWidth, barHeight, RED);
+  DrawRectangleRec(bar, RED);
 
   // Foreground (green) based on health percentage (assuming max health is 100)
-  float healthPercent = std::max(0.0f, health) / 100.0f;
-  DrawRectangle(barX, barY, barWidth * healthPercent, barHeight, GREEN);
+  const float healthPercent = std::max(0.0f, health) / 100.0f;
+  Rectangle fill = bar;
+  fill.width = barWidth * healthPercent;
+  DrawRectangleRec(fill, GREEN);
 
   // Outline
-  DrawRectangleLines(barX, barY, barWidth, barHeight, BLACK);
+  DrawRectangleLinesEx(bar, 1.0f, BLACK);
 }
 
 void FighterBall::applyDamage(float amount) {
